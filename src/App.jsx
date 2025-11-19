@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
+import CLIIntro from './CLIIntro';
 import { motion, useScroll, useSpring } from 'framer-motion';
-import { 
+import {
   Linkedin, Mail, Terminal, Server,
   Code2, Activity, Play,
   Folder, ChevronRight, Brain, Sparkles
@@ -76,7 +77,7 @@ const NeuralBackground = () => {
           const dist = Math.sqrt(dx * dx + dy * dy);
           if (dist < 120) {
             ctx.beginPath();
-            ctx.strokeStyle = `rgba(100, 100, 100, ${0.1 - dist/1200})`;
+            ctx.strokeStyle = `rgba(100, 100, 100, ${0.1 - dist / 1200})`;
             ctx.moveTo(p.x, p.y);
             ctx.lineTo(p2.x, p2.y);
             ctx.stroke();
@@ -96,19 +97,18 @@ const NeuralBackground = () => {
   return <canvas ref={canvasRef} className="fixed top-0 left-0 z-0 pointer-events-none bg-[#050505]" />;
 };
 
-// --- 2. TERMINAL DE BIENVENIDA ---
+// --- 2. TERMINAL DE BIENVENIDA (Main Page) ---
 const InteractiveTerminal = () => {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState([
     { type: 'system', text: 'Cargando perfil de Víctor Pagola...' },
-    { type: 'success', text: 'Detectado: Pasión por IA y Automatización.' },
+    { type: 'success', text: 'Detectado: Java/Python Developer & IT Technician.' },
     { type: 'info', text: 'Sistema listo. Escribe "help" para interactuar.' }
   ]);
-  
+
   const terminalBodyRef = useRef(null);
   const inputRef = useRef(null);
 
-  // FIX SCROLL: Usamos scrollTop en el contenedor en vez de scrollIntoView en la página
   useEffect(() => {
     if (terminalBodyRef.current) {
       terminalBodyRef.current.scrollTop = terminalBodyRef.current.scrollHeight;
@@ -119,60 +119,66 @@ const InteractiveTerminal = () => {
     if (e.key === 'Enter') {
       const cmd = input.trim().toLowerCase();
       const newLog = [...output, { type: 'user', text: `root@pagola:~$ ${input}` }];
-      
-      const responses = {
-        help: { type: 'info', text: 'Comandos: about, ai_vision, stack, contact, clear, github' },
-        about: { type: 'success', text: 'Víctor Pagola. Desarrollador Backend & IT Technician. Transformando ideas en código eficiente.' },
-        ai_vision: { type: 'warning', text: 'Objetivo: Implementar IA para optimizar procesos reales, mejorarlos e implementar nuevas tecnologías en proyectos.' },
-        stack: { type: 'info', text: 'Java | Python | AI Prompting | Linux | SQL | vibecoding' },
-        contact: { type: 'info', text: 'Email: victorpagola.w@gmail.com' },
-        clear: 'CLEAR',
-      };
 
-      if (cmd === 'clear') {
-        setOutput([]);
-      }  else if (cmd === 'github') {
-        // 1. Mensaje inicial
-        newLog.push({ type: 'warning', text: 'Iniciando protocolo de transferencia a GitHub...' });
-        setOutput(newLog);
+      let response = null;
 
-        // 2. Secuencia de cuenta atrás
-        let countdown = 3;
-        
-        const timer = setInterval(() => {
-          if (countdown > 0) {
-            setOutput(prev => [...prev, { type: 'system', text: `Redirigiendo en ${countdown}...` }]);
-            countdown--;
-          } else {
-            clearInterval(timer);
-            setOutput(prev => [...prev, { type: 'success', text: 'CONNECTION ESTABLISHED. LAUNCHING...' }]);
-            
-            // 3. Redirección final
-            setTimeout(() => {
-              window.location.href = 'https://github.com/Paagola';
-            }, 1000);
-          }
-        }, 1000); // Se ejecuta cada 1 segundo
-      }  
-      
-      else {
-        newLog.push(responses[cmd] || { type: 'error', text: `Error: Comando '${cmd}' desconocido.` });
-        setOutput(newLog);
+      switch (cmd) {
+        case 'help':
+          response = { type: 'info', text: 'Comandos: about, stack, contact, github, clear' };
+          break;
+        case 'about':
+          response = { type: 'success', text: 'Víctor Pagola. Desarrollador Java/Python & Técnico TI. Proactivo, creativo y apasionado por la automatización.' };
+          break;
+        case 'stack':
+          response = { type: 'warning', text: 'Java | Python | SQL | Linux | Gestión de Sistemas | Soporte Técnico' };
+          break;
+        case 'contact':
+          response = { type: 'info', text: 'Email: victorpagola.w@gmail.com | LinkedIn: /in/pagola' };
+          break;
+        case 'github':
+          newLog.push({ type: 'warning', text: 'Iniciando protocolo de transferencia a GitHub...' });
+          setOutput(newLog);
+          setInput('');
+
+          let count = 3;
+          const timer = setInterval(() => {
+            if (count > 0) {
+              setOutput(prev => [...prev, { type: 'system', text: `Redirigiendo en ${count}...` }]);
+              count--;
+            } else {
+              clearInterval(timer);
+              setOutput(prev => [...prev, { type: 'success', text: 'CONEXIÓN ESTABLECIDA.' }]);
+              setTimeout(() => {
+                window.location.href = 'https://github.com/Paagola';
+              }, 1000);
+            }
+          }, 1000);
+          return;
+        case 'clear':
+          setOutput([]);
+          setInput('');
+          return;
+        default:
+          response = { type: 'error', text: `Error: Comando '${cmd}' desconocido.` };
       }
+
+      if (response) {
+        newLog.push(response);
+      }
+
+      setOutput(newLog);
       setInput('');
     }
-    
   };
 
-  // Evitar scroll al hacer click para enfocar
   const focusInput = () => {
     inputRef.current?.focus({ preventScroll: true });
   };
 
   return (
-    <motion.div 
-      initial={{opacity:0, y:20}} 
-      animate={{opacity:1, y:0}} 
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
       className="w-full max-w-3xl mx-auto mt-12 rounded-lg overflow-hidden border border-[#333] bg-[#0c0c0c] shadow-2xl font-mono text-sm z-10 relative"
       onClick={focusInput}
     >
@@ -190,7 +196,7 @@ const InteractiveTerminal = () => {
         ))}
         <div className="flex text-blue-400">
           <span className="mr-2">➜</span>
-          <input 
+          <input
             ref={inputRef}
             className="bg-transparent border-none outline-none flex-1 text-white min-w-0"
             value={input}
@@ -213,7 +219,7 @@ const IDEWorkspace = () => {
   const [isRunning, setIsRunning] = useState(false);
   const [inputRequired, setInputRequired] = useState(false);
   const [userInput, setUserInput] = useState('');
-  
+
   // Ref para el contenedor de la consola (para controlar el scroll interno)
   const consoleContainerRef = useRef(null);
   const consoleInputRef = useRef(null);
@@ -228,14 +234,14 @@ const IDEWorkspace = () => {
   // Foco automático sin saltos
   useEffect(() => {
     if (inputRequired && consoleInputRef.current) {
-        consoleInputRef.current.focus({ preventScroll: true });
+      consoleInputRef.current.focus({ preventScroll: true });
     }
   }, [inputRequired]);
 
   const files = {
     'AI_Oracle.py': {
       lang: 'python',
-      icon: <Brain size={14} className="text-purple-400"/>,
+      icon: <Brain size={14} className="text-purple-400" />,
       code: (
         <pre>
           <span className="syntax-keyword">import</span> <span className="syntax-class">neural_core</span> <span className="syntax-keyword">as</span> ai{'\n'}
@@ -257,7 +263,7 @@ const IDEWorkspace = () => {
     },
     'SecurityGate.java': {
       lang: 'java',
-      icon: <Code2 size={14} className="text-red-400"/>,
+      icon: <Code2 size={14} className="text-red-400" />,
       code: (
         <pre>
           <span className="syntax-keyword">public class</span> <span className="syntax-class">Mainframe</span> {'{'}{'\n'}
@@ -300,38 +306,38 @@ const IDEWorkspace = () => {
       setTerminalLogs(prev => [...prev, { text: val, color: "text-white" }]);
       setUserInput('');
       setInputRequired(false);
-      
+
       setTimeout(() => {
         if (activeFile === 'AI_Oracle.py') {
-            const funnyResponses = [
-                "> Computing... The answer is 42. But you knew that.",
-                "> I've analyzed 14 million futures. In only one do you fix that bug without coffee.",
-                "> ERROR: Too much human logic detected. Please try thinking like a machine.",
-                `> Analysis of '${val}': Result uncertain. Recommend hiring Víctor to solve it.`,
-                "> Synthesizing... Have you tried turning the universe off and on again?"
-            ];
-            let response = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
-            if(val.toLowerCase().includes('job') || val.toLowerCase().includes('work') || val.toLowerCase().includes('contract')) {
-                response = "> Prediction: Hiring this developer increases efficiency by 200%.";
-            }
+          const funnyResponses = [
+            "> Computing... The answer is 42. But you knew that.",
+            "> I've analyzed 14 million futures. In only one do you fix that bug without coffee.",
+            "> ERROR: Too much human logic detected. Please try thinking like a machine.",
+            `> Analysis of '${val}': Result uncertain. Recommend hiring Víctor to solve it.`,
+            "> Synthesizing... Have you tried turning the universe off and on again?"
+          ];
+          let response = funnyResponses[Math.floor(Math.random() * funnyResponses.length)];
+          if (val.toLowerCase().includes('job') || val.toLowerCase().includes('work') || val.toLowerCase().includes('contract')) {
+            response = "> Prediction: Hiring this developer increases efficiency by 200%.";
+          }
 
-            setTerminalLogs(prev => [
-                ...prev, 
-                { text: "> Neural Network Thinking...", color: "text-gray-500 animate-pulse" },
-                { text: response, color: "text-cyan-400 font-bold" }
-            ]);
-            setIsRunning(false);
+          setTerminalLogs(prev => [
+            ...prev,
+            { text: "> Neural Network Thinking...", color: "text-gray-500 animate-pulse" },
+            { text: response, color: "text-cyan-400 font-bold" }
+          ]);
+          setIsRunning(false);
 
         } else {
           if (val.toLowerCase() === 'admin' || val.length > 5) {
             setTerminalLogs(prev => [
-              ...prev, 
+              ...prev,
               { text: "> Verifying hash...", color: "text-gray-400" },
               { text: "> ACCESS GRANTED. Welcome back, Commander.", color: "text-green-500 font-bold" }
             ]);
           } else {
-             setTerminalLogs(prev => [
-              ...prev, 
+            setTerminalLogs(prev => [
+              ...prev,
               { text: "> Verifying hash...", color: "text-gray-400" },
               { text: "> ACCESS DENIED. This incident will be reported.", color: "text-red-500 font-bold" }
             ]);
@@ -348,10 +354,10 @@ const IDEWorkspace = () => {
         <div className="p-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-[#21262d]">Project Explorer</div>
         <div className="p-2 space-y-1">
           <div className="flex items-center gap-2 text-gray-400 px-2 py-1 hover:text-white cursor-pointer">
-            <ChevronRight size={14}/> <Folder size={14} className="text-blue-400"/> src
+            <ChevronRight size={14} /> <Folder size={14} className="text-blue-400" /> src
           </div>
           {Object.keys(files).map(filename => (
-            <div 
+            <div
               key={filename}
               onClick={() => { setActiveFile(filename); setTerminalLogs([]); setIsRunning(false); setInputRequired(false); }}
               className={`flex items-center gap-2 px-6 py-1.5 text-sm cursor-pointer transition-colors ${activeFile === filename ? 'bg-[#21262d] text-white border-l-2 border-blue-500' : 'text-gray-500 hover:text-gray-300'}`}
@@ -368,12 +374,12 @@ const IDEWorkspace = () => {
             {files[activeFile].icon} {activeFile}
           </div>
           <div className="ml-auto px-4">
-            <button 
+            <button
               onClick={handleRun}
               disabled={isRunning && !inputRequired}
               className={`flex items-center gap-2 px-3 py-1 rounded text-xs font-bold transition-colors disabled:opacity-50 ${isRunning && !inputRequired ? 'bg-yellow-600 text-white' : 'bg-green-600 hover:bg-green-500 text-white'}`}
             >
-              <Play size={12} fill="currentColor"/> RUN
+              <Play size={12} fill="currentColor" /> RUN
             </button>
           </div>
         </div>
@@ -383,20 +389,20 @@ const IDEWorkspace = () => {
         </div>
 
         {/* Console con Scroll Controlado */}
-        <div 
-            ref={consoleContainerRef}
-            className="h-40 bg-[#010409] border-t border-[#333] flex flex-col p-3 font-mono text-xs overflow-y-auto" 
-            onClick={() => inputRequired && consoleInputRef.current?.focus({ preventScroll: true })}
+        <div
+          ref={consoleContainerRef}
+          className="h-40 bg-[#010409] border-t border-[#333] flex flex-col p-3 font-mono text-xs overflow-y-auto"
+          onClick={() => inputRequired && consoleInputRef.current?.focus({ preventScroll: true })}
         >
           <div className="text-gray-500 mb-1">DEBUG CONSOLE</div>
           {terminalLogs.map((log, i) => (
-             <div key={i} className={`${log.color} mb-1 whitespace-pre-wrap`}>{log.text}</div>
+            <div key={i} className={`${log.color} mb-1 whitespace-pre-wrap`}>{log.text}</div>
           ))}
-          
+
           {inputRequired && (
             <div className="flex items-center text-blue-400 animate-pulse">
               <span className="mr-2">?</span>
-              <input 
+              <input
                 ref={consoleInputRef}
                 className="bg-transparent border-none outline-none flex-1 text-white"
                 value={userInput}
@@ -416,65 +422,66 @@ const IDEWorkspace = () => {
 // --- 4. NUEVA SECCIÓN: SOBRE MÍ (Limpia y Profesional) ---
 const AboutSection = () => (
   <section id="about" className="py-20 px-6 relative z-10">
-    {/* Eliminados iconos gigantes, diseño centrado en contenido */}
     <div className="max-w-4xl mx-auto border border-[#333] bg-[#0c0c0c]/80 backdrop-blur-md rounded-xl p-10 relative overflow-hidden">
-        {/* Detalles técnicos decorativos en las esquinas */}
-        <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-pink-500 rounded-tl-lg opacity-70"></div>
-        <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-500 rounded-br-lg opacity-70"></div>
+      <div className="absolute top-0 left-0 w-8 h-8 border-t-2 border-l-2 border-pink-500 rounded-tl-lg opacity-70"></div>
+      <div className="absolute bottom-0 right-0 w-8 h-8 border-b-2 border-r-2 border-cyan-500 rounded-br-lg opacity-70"></div>
 
-        <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
-           Sobre Mí
-           <span className="text-xs font-mono font-normal text-gray-500 bg-[#21262d] px-2 py-1 rounded">human_v2.0</span>
-        </h2>
-        
-        <div className="space-y-4 text-gray-300 leading-relaxed text-lg">
-            <p>
-                Soy una persona <span className="text-white font-semibold">proactiva y creativa</span> con un fuerte interés en la tecnología. 
-                Me apasiona transformar ideas abstractas en proyectos reales mediante código limpio, buscando siempre soluciones innovadoras.
-            </p>
-            <p>
-                Me especializo en trabajar en equipo y automatizar procesos. Actualmente, mi foco está en aprovechar la <span className="text-cyan-400 font-semibold">Inteligencia Artificial</span> para mejorar la eficiencia y la productividad de las empresas, integrando nuevas herramientas en flujos de trabajo tradicionales.
-            </p>
-        </div>
+      <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
+        Sobre Mí
+        <span className="text-xs font-mono font-normal text-gray-500 bg-[#21262d] px-2 py-1 rounded">human_v2.0</span>
+      </h2>
 
-        <div className="flex flex-wrap gap-4 text-xs font-mono text-gray-400 border-t border-[#333] pt-6 mt-8">
-            <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
-                <Sparkles size={12} className="text-yellow-400"/> AI Integration
-            </span>
-            <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
-                <Sparkles size={12} className="text-yellow-400"/> Automatización de Procesos
-            </span>
-            <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
-                <Sparkles size={12} className="text-yellow-400"/> Eficiencia Empresarial
-            </span>
-        </div>
+      <div className="space-y-4 text-gray-300 leading-relaxed text-lg">
+        <p>
+          Soy una persona <span className="text-white font-semibold">proactiva y creativa</span> con un fuerte interés en la tecnología y el desarrollo de software.
+          Me apasiona transformar ideas en proyectos reales mediante código, buscando siempre soluciones innovadoras y prácticas.
+        </p>
+        <p>
+          Tengo facilidad para aprender de forma rápida y adaptarme a nuevos retos. Me gusta trabajar en equipo, automatizar procesos y aprovechar la <span className="text-cyan-400 font-semibold">inteligencia artificial</span> para mejorar la eficiencia y la productividad de las empresas.
+        </p>
+        <p className="text-sm text-gray-400 mt-4">
+          Dispongo de carnet de conducir B y vehículo propio.
+        </p>
+      </div>
+
+      <div className="flex flex-wrap gap-4 text-xs font-mono text-gray-400 border-t border-[#333] pt-6 mt-8">
+        <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
+          <Sparkles size={12} className="text-yellow-400" /> Automatización
+        </span>
+        <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
+          <Sparkles size={12} className="text-yellow-400" /> Trabajo en Equipo
+        </span>
+        <span className="flex items-center gap-2 bg-[#111] px-3 py-1 rounded border border-[#333]">
+          <Sparkles size={12} className="text-yellow-400" /> Gestión de Sistemas
+        </span>
+      </div>
     </div>
   </section>
 );
 
 // --- 5. GRID DE EXPERIENCIA ---
 const TechCard = ({ icon: Icon, title, role, desc, color, tags }) => (
-  <motion.div 
+  <motion.div
     whileHover={{ y: -5 }}
-    className="p-6 rounded-xl border border-[#333] bg-[#161b22] relative overflow-hidden group transition-all hover:border-opacity-50 hover:shadow-lg flex flex-col h-full"
+    className="p-6 rounded-xl border border-[#333] bg-[#161b22] relative overflow-hidden group transition-all hover:border-opacity-50 hover:shadow-lg flex flex-col h-full text-center"
     style={{ borderColor: color }}
   >
     <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black opacity-50"></div>
     <div className="absolute top-0 right-0 p-3 opacity-10 group-hover:opacity-20 transition-opacity">
       <Icon size={80} color={color} />
     </div>
-    
-    <div className="relative z-10 flex-1">
-      <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-opacity-10" style={{ backgroundColor: color }}>
+
+    <div className="relative z-10 flex-1 flex flex-col items-center">
+      <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-opacity-10 mx-auto" style={{ backgroundColor: color }}>
         <Icon size={24} style={{ color: color }} />
       </div>
       <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
       <div className="inline-block px-2 py-0.5 rounded text-xs font-mono mb-3 bg-[#333] text-gray-300">
         {role}
       </div>
-      <p className="text-gray-400 text-sm leading-relaxed mb-4">{desc}</p>
+      <p className="text-gray-400 text-sm leading-relaxed mb-4 whitespace-pre-line">{desc}</p>
     </div>
-    <div className="relative z-10 flex flex-wrap gap-2 mt-auto">
+    <div className="relative z-10 flex flex-wrap gap-2 mt-auto justify-center">
       {tags.map(tag => (
         <span key={tag} className="text-[10px] px-2 py-1 rounded bg-black/50 border border-white/10 text-gray-400">
           {tag}
@@ -486,13 +493,18 @@ const TechCard = ({ icon: Icon, title, role, desc, color, tags }) => (
 
 // --- LAYOUT PRINCIPAL ---
 const Portfolio = () => {
+  const [showIntro, setShowIntro] = useState(true);
   const { scrollYProgress } = useScroll();
   const scaleX = useSpring(scrollYProgress, { stiffness: 100, damping: 30, restDelta: 0.001 });
+
+  if (showIntro) {
+    return <CLIIntro onComplete={() => setShowIntro(false)} />;
+  }
 
   return (
     <div className="min-h-screen text-gray-200 font-sans selection:bg-pink-500 selection:text-white">
       <NeuralBackground />
-      
+
       <motion.div className="fixed top-0 left-0 right-0 h-1 bg-gradient-to-r from-pink-500 via-purple-500 to-cyan-500 origin-left z-50" style={{ scaleX }} />
 
       <nav className="fixed top-6 left-1/2 -translate-x-1/2 z-40 backdrop-blur-xl bg-black/50 border border-[#333] rounded-full px-6 py-3 flex gap-8 hidden md:flex">
@@ -506,7 +518,7 @@ const Portfolio = () => {
       {/* HERO */}
       <section id="root" className="relative min-h-screen flex flex-col justify-center items-center px-6 pt-10">
         <div className="text-center z-10">
-          <motion.div initial={{scale:0}} animate={{scale:1}} className="inline-block mb-6 relative">
+          <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} className="inline-block mb-6 relative">
             <div className="absolute inset-0 bg-purple-600 blur-xl opacity-20 animate-pulse"></div>
             <Terminal size={60} className="relative text-white" />
           </motion.div>
@@ -514,11 +526,10 @@ const Portfolio = () => {
           <h1 className="text-6xl md:text-8xl font-black tracking-tighter text-white mb-6 glitch-effect">
             VÍCTOR PAGOLA
           </h1>
-          
+
           <div className="flex justify-center gap-4 text-sm font-mono text-gray-400 mb-8">
             <span className="px-3 py-1 border border-[#333] rounded bg-[#111] text-pink-400">Java / Python Dev</span>
             <span className="px-3 py-1 border border-[#333] rounded bg-[#111] text-green-400">IT Technician</span>
-            <span className="px-3 py-1 border border-[#333] rounded bg-[#111] text-cyan-400">AI Enthusiast</span>
           </div>
 
           <InteractiveTerminal />
@@ -537,29 +548,47 @@ const Portfolio = () => {
           </div>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <TechCard 
+            <TechCard
               icon={Server}
               title="IDILIQ Group"
               role="IT Technician | 1 Año"
-              desc="Gestión integral de soporte, Intune y redes. Participación activa en proyectos de optimización tecnológica y automatización de procesos clave."
+              desc={`Gestión integral del soporte técnico e incidencias (Service Desk, TeamViewer, Intune).
+              Administración de usuarios, redes y hardware crítico (SAI, impresión).
+              Participación en proyectos de optimización tecnológica y automatización.`}
               color="#bd93f9" // Purple
-              tags={['Service Desk', 'Optimización', 'Hardware', 'SAI']}
+              tags={['Service Desk', 'Intune', 'Hardware', 'Redes', 'Automatización']}
             />
-            <TechCard 
-              icon={Brain}
-              title="AI & Innovation"
-              role="Formación Continua"
-              desc="Curso de Fundamentos de IA y desarrollo con Inteligencia Artificial. Hackathon DigitIA FP Innovation. Uso de IA para potenciar el desarrollo."
-              color="#50fa7b" // Green
-              tags={['Prompting', 'DigitIA Hackathon', 'Automatización']}
-            />
-            <TechCard 
+            <TechCard
               icon={Code2}
-              title="Formación D.A.M"
+              title="D.A.M"
               role="Desarrollo Multiplataforma"
-              desc="Programación orientada a objetos (Java), Bases de Datos (SQL) y lógica avanzada. Desarrollo de APIs y proyectos en grupo."
+              desc={`C.P.I.F.P Alan Turing.
+              Java, Programación orientada a objetos, SQL, Database SQL.
+              Lógica Avanzada, HTML, CSS, JavaScript, JSON.
+              Resolución de problemas, Liderazgo, GitHub, Git.`}
               color="#ff79c6" // Pink
-              tags={['Java', 'SQL', 'Git', 'Liderazgo']}
+              tags={['Java', 'SQL', 'Git', 'Liderazgo', 'HTML/CSS/JS']}
+            />
+            <TechCard
+              icon={Brain}
+              title="S.M.R"
+              role="Sistemas Microinformáticos"
+              desc={`Cesur Formación Málaga Este.
+              Bases de Datos, Office 365, CMD y Linux.
+              Redes Locales, Servidores, Seguridad Informática.
+              System Hardware, Virtualización.`}
+              color="#50fa7b" // Green
+              tags={['Linux', 'Seguridad', 'Redes', 'Virtualización']}
+            />
+            <TechCard
+              icon={Sparkles}
+              title="Cursos Extraescolares"
+              role="Formación Continua"
+              desc={`DigitIA FP Innovation y APES Network Hackathon.
+              Curso introductorio de desarrollo con IA.
+              OpenWebinars: Fundamentos de IA, Python Course, Numpy.`}
+              color="#f1fa8c" // Yellow
+              tags={['IA', 'Python', 'Hackathon', 'Numpy']}
             />
           </div>
         </div>
@@ -571,11 +600,11 @@ const Portfolio = () => {
           <div className="mb-12 text-center">
             <h2 className="text-3xl font-bold text-white mb-4">Dev Playground</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
-              Interactúa con los módulos. Prueba a preguntarle algo al script de 
+              Interactúa con los módulos. Prueba a preguntarle algo al script de
               <span className="text-purple-400 font-mono font-bold"> Python (AI Oracle)</span> o intenta loguearte en el sistema <span className="text-red-400 font-mono font-bold">Java</span>.
             </p>
           </div>
-          
+
           <IDEWorkspace />
         </div>
       </section>
@@ -585,14 +614,14 @@ const Portfolio = () => {
         <h2 className="text-4xl font-bold text-white mb-8">Inicializar Conexión?</h2>
         <div className="flex justify-center gap-6 flex-wrap">
           <a href="mailto:victorpagola.w@gmail.com" className="px-8 py-4 bg-white text-black font-bold rounded hover:bg-gray-200 transition-colors flex items-center gap-2">
-            <Mail size={20}/> victorpagola.w@gmail.com
+            <Mail size={20} /> victorpagola.w@gmail.com
           </a>
           <a href="https://www.linkedin.com/in/pagola/" target="_blank" rel="noreferrer" className="px-8 py-4 border border-[#333] bg-[#111] text-white font-bold rounded hover:bg-[#222] transition-colors flex items-center gap-2">
-            <Linkedin size={20}/> LinkedIn
+            <Linkedin size={20} /> LinkedIn
           </a>
         </div>
         <footer className="mt-20 text-gray-600 font-mono text-xs">
-          SYSTEM STATUS: ONLINE | UBICACIÓN: MÁLAGA, ES | CARNET B + VEHÍCULO
+          SYSTEM STATUS: ONLINE | UBICACIÓN: MÁLAGA, ES
         </footer>
       </section>
     </div>
