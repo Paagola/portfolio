@@ -101,9 +101,9 @@ const NeuralBackground = () => {
 const InteractiveTerminal = () => {
   const [input, setInput] = useState('');
   const [output, setOutput] = useState([
-    { type: 'system', text: 'Cargando perfil de Víctor Pagola...' },
-    { type: 'success', text: 'Detectado: Java/Python Developer & IT Technician.' },
-    { type: 'info', text: 'Sistema listo. Escribe "help" para interactuar.' }
+    { type: 'system', text: 'Initializing Portfolio...' },
+    { type: 'success', text: 'Loaded: Java/Python Developer & IT Technician.' },
+    { type: 'info', text: 'System ready. Type "help" to explore.' }
   ]);
 
   const terminalBodyRef = useRef(null);
@@ -214,7 +214,7 @@ const InteractiveTerminal = () => {
 
 // --- 3. IDE INTERACTIVO ---
 const IDEWorkspace = () => {
-  const [activeFile, setActiveFile] = useState('AI_Oracle.py');
+  const [activeFile, setActiveFile] = useState('assistant.py');
   const [terminalLogs, setTerminalLogs] = useState([]);
   const [isRunning, setIsRunning] = useState(false);
   const [inputRequired, setInputRequired] = useState(false);
@@ -239,7 +239,7 @@ const IDEWorkspace = () => {
   }, [inputRequired]);
 
   const files = {
-    'AI_Oracle.py': {
+    'assistant.py': {
       lang: 'python',
       icon: <Brain size={14} className="text-purple-400" />,
       code: (
@@ -290,7 +290,7 @@ const IDEWorkspace = () => {
     setInputRequired(false);
 
     setTimeout(() => {
-      if (activeFile === 'AI_Oracle.py') {
+      if (activeFile === 'assistant.py') {
         setTerminalLogs(prev => [...prev, { text: "Ask the AI anything (Job, Life, Code?):", color: "text-purple-400" }]);
         setInputRequired(true);
       } else {
@@ -308,7 +308,7 @@ const IDEWorkspace = () => {
       setInputRequired(false);
 
       setTimeout(() => {
-        if (activeFile === 'AI_Oracle.py') {
+        if (activeFile === 'assistant.py') {
           const funnyResponses = [
             "> Computing... The answer is 42. But you knew that.",
             "> I've analyzed 14 million futures. In only one do you fix that bug without coffee.",
@@ -349,7 +349,7 @@ const IDEWorkspace = () => {
   };
 
   return (
-    <div className="rounded-xl overflow-hidden border border-[#333] bg-[#0d1117] shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row h-[500px]">
+    <div className="rounded-xl overflow-hidden border border-[#333] bg-[#0d1117] shadow-2xl max-w-5xl mx-auto flex flex-col md:flex-row h-auto md:h-[500px]">
       <div className="w-full md:w-64 bg-[#010409] border-r border-[#333] flex flex-col">
         <div className="p-3 text-xs font-bold text-gray-400 uppercase tracking-wider border-b border-[#21262d]">Project Explorer</div>
         <div className="p-2 space-y-1">
@@ -428,7 +428,6 @@ const AboutSection = () => (
 
       <h2 className="text-3xl font-bold text-white mb-6 flex items-center gap-3">
         Sobre Mí
-        <span className="text-xs font-mono font-normal text-gray-500 bg-[#21262d] px-2 py-1 rounded">human_v2.0</span>
       </h2>
 
       <div className="space-y-4 text-gray-300 leading-relaxed text-lg">
@@ -463,7 +462,7 @@ const AboutSection = () => (
 const TechCard = ({ icon: Icon, title, role, desc, color, tags }) => (
   <motion.div
     whileHover={{ y: -5 }}
-    className="p-6 rounded-xl border border-[#333] bg-[#161b22] relative overflow-hidden group transition-all hover:border-opacity-50 hover:shadow-lg flex flex-col h-full text-center"
+    className="p-6 rounded-xl border border-[#333] bg-[#161b22] relative overflow-hidden group transition-all hover:border-opacity-50 hover:shadow-lg flex flex-col h-full text-left"
     style={{ borderColor: color }}
   >
     <div className="absolute inset-0 bg-gradient-to-br from-transparent to-black opacity-50"></div>
@@ -471,8 +470,8 @@ const TechCard = ({ icon: Icon, title, role, desc, color, tags }) => (
       <Icon size={80} color={color} />
     </div>
 
-    <div className="relative z-10 flex-1 flex flex-col items-center">
-      <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-opacity-10 mx-auto" style={{ backgroundColor: color }}>
+    <div className="relative z-10 flex-1 flex flex-col items-start">
+      <div className="w-12 h-12 rounded-lg flex items-center justify-center mb-4 bg-opacity-10" style={{ backgroundColor: color }}>
         <Icon size={24} style={{ color: color }} />
       </div>
       <h3 className="text-xl font-bold text-white mb-1">{title}</h3>
@@ -481,7 +480,7 @@ const TechCard = ({ icon: Icon, title, role, desc, color, tags }) => (
       </div>
       <p className="text-gray-400 text-sm leading-relaxed mb-4 whitespace-pre-line">{desc}</p>
     </div>
-    <div className="relative z-10 flex flex-wrap gap-2 mt-auto justify-center">
+    <div className="relative z-10 flex flex-wrap gap-2 mt-auto justify-start">
       {tags.map(tag => (
         <span key={tag} className="text-[10px] px-2 py-1 rounded bg-black/50 border border-white/10 text-gray-400">
           {tag}
@@ -542,12 +541,12 @@ const Portfolio = () => {
       {/* EXPERIENCE & EDUCATION GRID */}
       <section id="profile" className="py-20 px-6 relative z-10">
         <div className="max-w-6xl mx-auto">
-          <div className="mb-12 flex items-center gap-3">
+          <div className="mb-12 flex gap-3">
             <Activity className="text-pink-500" />
-            <h2 className="text-3xl font-bold text-white">System Logs <span className="text-gray-600 text-lg font-normal">/ Exp & Education</span></h2>
+            <h2 className="text-3xl font-bold text-white">Professional Experience <span className="text-gray-600 text-lg font-normal">/ Education</span></h2>
           </div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid md:grid-cols-2 lg:grid-cols-2 gap-6">
             <TechCard
               icon={Server}
               title="IDILIQ Group"
@@ -601,7 +600,7 @@ const Portfolio = () => {
             <h2 className="text-3xl font-bold text-white mb-4">Dev Playground</h2>
             <p className="text-gray-400 max-w-2xl mx-auto">
               Interactúa con los módulos. Prueba a preguntarle algo al script de
-              <span className="text-purple-400 font-mono font-bold"> Python (AI Oracle)</span> o intenta loguearte en el sistema <span className="text-red-400 font-mono font-bold">Java</span>.
+              <span className="text-purple-400 font-mono font-bold"> Python (Assistant)</span> o intenta loguearte en el sistema <span className="text-red-400 font-mono font-bold">Java</span>.
             </p>
           </div>
 
@@ -611,7 +610,7 @@ const Portfolio = () => {
 
       {/* FOOTER / CONTACT */}
       <section id="contact" className="py-32 px-6 relative z-10 text-center">
-        <h2 className="text-4xl font-bold text-white mb-8">Inicializar Conexión?</h2>
+        <h2 className="text-4xl font-bold text-white mb-8">Ready to Collaborate?</h2>
         <div className="flex justify-center gap-6 flex-wrap">
           <a href="mailto:victorpagola.w@gmail.com" className="px-8 py-4 bg-white text-black font-bold rounded hover:bg-gray-200 transition-colors flex items-center gap-2">
             <Mail size={20} /> victorpagola.w@gmail.com
