@@ -179,7 +179,7 @@ const InteractiveTerminal = () => {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="w-full max-w-3xl mx-auto mt-12 rounded-lg overflow-hidden border border-[#333] bg-[#0c0c0c] shadow-2xl font-mono text-sm z-10 relative"
+      className="w-full max-w-3xl mx-auto mt-12 rounded-lg overflow-hidden border border-[#333] bg-[#0c0c0c] shadow-2xl font-mono text-sm z-10 relative text-left"
       onClick={focusInput}
     >
       <div className="bg-[#1a1a1a] px-4 py-2 flex gap-2 border-b border-[#333]">
@@ -607,6 +607,8 @@ const Portfolio = () => {
           <IDEWorkspace />
         </div>
       </section>
+
+
 
       {/* FOOTER / CONTACT */}
       <section id="contact" className="py-32 px-6 relative z-10 text-center">

@@ -181,7 +181,7 @@ const CLIIntro = ({ onComplete }) => {
                 {/* Terminal Body */}
                 <div
                     ref={containerRef}
-                    className="flex-1 p-6 overflow-y-auto font-mono text-sm md:text-base custom-scrollbar"
+                    className="flex-1 p-6 overflow-y-auto font-mono text-sm md:text-base custom-scrollbar text-left"
                     onClick={() => inputRef.current?.focus()}
                 >
                     {lines.map((line, i) => (
